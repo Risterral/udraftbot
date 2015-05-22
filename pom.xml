@@ -6,7 +6,7 @@
 
     <groupId>com.gmail.risterral.udraftbot</groupId>
     <artifactId>udraftbot</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.8.0</version>
 
     <dependencies>
         <dependency>
