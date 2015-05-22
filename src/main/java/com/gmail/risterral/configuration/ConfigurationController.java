@@ -1,4 +1,9 @@
-package com.gmail.risterral.gui.config;
+package com.gmail.risterral.configuration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.gmail.risterral.controllers.log.LogController;
+import com.gmail.risterral.controllers.log.LogMessageType;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -9,18 +14,20 @@ import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
 
-public class ConfigurationFile {
+public class ConfigurationController {
+    private static final ConfigurationController instance = new ConfigurationController();
+    private ConfigurationDTO configurationDTO;
+
     private static final String ALGORITHM = "DES";
     private static final String FORMAT = "RAW";
     private static final String ENCODING = "utf-8";
     private static final String FILE_NAME = "UDraftConfig.cfg";
     private static final String KEY = "i4niYu2u";
     private static final String SALT = "LT6mfxghgy";
-    private static final String SEPARATOR = "Jaf68dE1HX";
     private Cipher encrypter;
     private Cipher decrypter;
 
-    public ConfigurationFile() {
+    private ConfigurationController() {
         try {
             encrypter = Cipher.getInstance(ALGORITHM);
             decrypter = Cipher.getInstance(ALGORITHM);
@@ -29,12 +36,22 @@ public class ConfigurationFile {
             SecretKey key = prepareKey(KEY);
             encrypter.init(Cipher.ENCRYPT_MODE, key);
             decrypter.init(Cipher.DECRYPT_MODE, key);
+
+            getData();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogController.log(this.getClass(), e, LogMessageType.ERROR, "Unexpected error while reading config");
         }
     }
 
-    public LinkedHashMap<String, String> getData() {
+    public static ConfigurationController getInstance() {
+        return instance;
+    }
+
+    public ConfigurationDTO getConfigurationDTO() {
+        return configurationDTO;
+    }
+
+    public void getData() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(FILE_NAME), ENCODING));
             StringBuilder data = new StringBuilder();
@@ -45,28 +62,27 @@ public class ConfigurationFile {
             }
             String decryptedData = decrypt(data.toString());
             if (decryptedData.startsWith(SALT)) {
-                LinkedHashMap<String, String> dataMap = new LinkedHashMap<>();
-                for (String dataValue : decryptedData.replaceAll(SALT, "").split(SEPARATOR)) {
-                    dataMap.put(dataValue.split("=")[0], dataValue.split("=")[1]);
-                }
-                return dataMap;
+                ObjectMapper objectMapper = new ObjectMapper();
+                configurationDTO = objectMapper.readValue(decryptedData.replaceAll(SALT, ""), ConfigurationDTO.class);
             }
             reader.close();
         } catch (Exception ignored) {
+            configurationDTO = new ConfigurationDTO();
         }
-        return null;
     }
 
-    public void saveData(LinkedHashMap<String, String> dataMap) {
+    public void saveData() {
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(FILE_NAME), ENCODING));
             StringBuilder dataToSave = new StringBuilder();
             dataToSave.append(SALT);
-            String separator = "";
-            for (String dataKey : dataMap.keySet()) {
-                dataToSave.append(separator).append(dataKey).append("=").append(dataMap.get(dataKey));
-                separator = SEPARATOR;
-            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            StringWriter stringWriter = new StringWriter();
+            objectMapper.writeValue(stringWriter, configurationDTO);
+            dataToSave.append(stringWriter);
+
             writer.write(encrypt(dataToSave.toString()));
             writer.close();
         } catch (Exception ignored) {

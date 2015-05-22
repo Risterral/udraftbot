@@ -1,7 +1,7 @@
 package com.gmail.risterral.controllers.bot;
 
-
 import com.gmail.risterral.bot.TwitchBot;
+import com.gmail.risterral.controllers.gui.GUIController;
 import com.gmail.risterral.controllers.log.LogController;
 import com.gmail.risterral.controllers.log.LogMessageType;
 
@@ -11,7 +11,8 @@ public class BotController {
     private static final BotController instance = new BotController();
     private static final String OAUTH_PREFIX = "oauth:";
     private static final String CHAT_PREFIX = "#";
-    private static final int MESSAGE_SEND_TIME_LIMIT = 500;
+    private static final int MESSAGE_SEND_TIME_LIMIT_WITH_MOD = 500;
+    private static final int MESSAGE_SEND_TIME_LIMIT_WITHOUT_MOD = 1500;
 
     private TwitchBot bot = null;
     private String channel;
@@ -66,20 +67,21 @@ public class BotController {
 
     public void sendMessage(final String message, final BotMessageType messageType) {
         if (bot != null) {
+            Integer messageSendTimeLimit = GUIController.getInstance().isBotAccountModded() ? MESSAGE_SEND_TIME_LIMIT_WITH_MOD : MESSAGE_SEND_TIME_LIMIT_WITHOUT_MOD;
             Long currentTime = new Date().getTime();
-            if (!isTimerRunning && currentTime - lastMessageSendTime > MESSAGE_SEND_TIME_LIMIT) {
+            if (!isTimerRunning && currentTime - lastMessageSendTime > messageSendTimeLimit) {
                 bot.sendMessage(channel, message);
                 lastMessageSendTime = new Date().getTime();
                 if (!messagesToSend.isEmpty()) {
                     isTimerRunning = true;
-                    new Timer().schedule(new SendMessageTask(), MESSAGE_SEND_TIME_LIMIT);
+                    new Timer().schedule(new SendMessageTask(), messageSendTimeLimit);
                 }
             } else {
                 messagesToSend.add(new Pair<>(message, messageType));
                 organizeMessages();
                 if (!isTimerRunning) {
                     isTimerRunning = true;
-                    new Timer().schedule(new SendMessageTask(), MESSAGE_SEND_TIME_LIMIT - currentTime + lastMessageSendTime);
+                    new Timer().schedule(new SendMessageTask(), messageSendTimeLimit - currentTime + lastMessageSendTime);
                 }
             }
         }

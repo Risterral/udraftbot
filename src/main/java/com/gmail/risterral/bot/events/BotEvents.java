@@ -1,23 +1,29 @@
 package com.gmail.risterral.bot.events;
 
 public enum BotEvents {
-    PICK_CARD("!pick", new PickBotEvent()),
-    SHOW_CARD("!card", new ShowBotEvent()),
-    UDRAFT_HELP("!udraft help", new UDraftHelpBotEvent()),
-    UDRAFT_ABOUT("!udraft about", new UDraftAboutBotEvent()),
-    UDRAFT_COMMANDS("!udraft commands", new UDraftCommandsBotEvent()),
-    UDRAFT_TEST("!udraft test", new UDraftTestEvent());
+    PICK_CARD("!pick", null, new PickBotEvent()),
+    SHOW_CARD("!card", null, new ShowBotEvent()),
+    UDRAFT_HELP("!udraft help", null, new UDraftHelpBotEvent()),
+    UDRAFT_ABOUT("!udraft about", null, new UDraftAboutBotEvent()),
+    UDRAFT_COMMANDS("!udraft commands", null, new UDraftCommandsBotEvent()),
+    UDRAFT_TEST("!udraft test", new String[] {"populate"}, new UDraftTestEvent());
 
     private String eventCommand;
+    private String[] optionalArguments;
     private IBotEvent event;
 
-    BotEvents(String eventCommand, IBotEvent event) {
+    private BotEvents(String eventCommand, String[] additionalArguments, IBotEvent event) {
         this.eventCommand = eventCommand;
+        this.optionalArguments = additionalArguments;
         this.event = event;
     }
 
     public String getEventCommand() {
         return eventCommand;
+    }
+
+    public String[] getOptionalArguments() {
+        return optionalArguments;
     }
 
     public IBotEvent getEvent() {

@@ -40,6 +40,10 @@ public class GUIController {
         configurationPanel.setConnectButtonEnabled(enabled);
     }
 
+    public Boolean isBotAccountModded() {
+        return configurationPanel.isBotAccountModded();
+    }
+
     public Boolean isTestCommandEnabled() {
         return configurationPanel.isTestCommandEnabled();
     }

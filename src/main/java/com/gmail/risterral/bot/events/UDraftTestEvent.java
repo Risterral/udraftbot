@@ -23,12 +23,14 @@ public class UDraftTestEvent implements IBotEvent {
             test.add("Wrathwood Master Moss");
             test.add("Wakizashi Ambusher");
             test.add("Te'talca, Orc Gladiator");
-//            test.add("Not existing card to test");
+            test.add("Not existing card");
             HexEventsController.getInstance().clearDraftPackCards();
             HexEventsController.getInstance().setNewDraftPackCards(test);
 
-            for (int i = 0; i < 100; i++) {
-                VotingController.getInstance().voteForCard("sender_" + i, randomGenerator.nextInt(test.size()));
+            if (args.length > 2 && BotEvents.UDRAFT_TEST.getOptionalArguments()[0].equalsIgnoreCase(args[2])) {
+                for (int i = 0; i < 100; i++) {
+                    VotingController.getInstance().voteForCard("sender_" + i, randomGenerator.nextInt(test.size()));
+                }
             }
         }
     }

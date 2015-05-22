@@ -1,17 +1,23 @@
 package com.gmail.risterral.gui.config;
 
 import com.gmail.risterral.bot.events.BotEvents;
+import com.gmail.risterral.configuration.ConfigurationController;
+import com.gmail.risterral.configuration.ConfigurationDTO;
 import com.gmail.risterral.controllers.bot.BotController;
 import com.gmail.risterral.controllers.hex.HexEventsController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.LinkedHashMap;
 
 public class ConfigurationPanel extends JPanel {
@@ -20,8 +26,7 @@ public class ConfigurationPanel extends JPanel {
 
     private GridBagConstraints inputConstraints = null;
     private GridBagConstraints labelConstraints = null;
-
-    private ConfigurationFile configurationFile;
+    private boolean isSaveEnabled = true;
 
     private JTextField serverHostname;
     private JTextField serverPort;
@@ -30,6 +35,7 @@ public class ConfigurationPanel extends JPanel {
     private JTextField channel;
     private JTextField hexListenerPort;
 
+    private JCheckBox isBotAccountModded;
     private JCheckBox enableTestCommandCheckBox;
     private JCheckBox enableTestSaveDeckEventCheckBox;
 
@@ -41,21 +47,19 @@ public class ConfigurationPanel extends JPanel {
         this.setLayout(new BorderLayout());
         this.initConstrains();
 
-        configurationFile = new ConfigurationFile();
-
         this.add(createHeader(), BorderLayout.NORTH);
         this.add(createForm(), BorderLayout.CENTER);
         this.add(createButtonsPanel(), BorderLayout.EAST);
 
-        LinkedHashMap<String, String> data = configurationFile.getData();
-        if (data != null) {
-            serverHostname.setText(data.containsKey("serverHostname") ? data.get("serverHostname") : "");
-            serverPort.setText(data.containsKey("serverPort") ? data.get("serverPort") : "");
-            botName.setText(data.containsKey("botName") ? data.get("botName") : "");
-            password.setText(data.containsKey("password") ? data.get("password") : "");
-            channel.setText(data.containsKey("channel") ? data.get("channel") : "");
-            hexListenerPort.setText(data.containsKey("hexListenerPort") ? data.get("hexListenerPort") : "");
-        }
+        isSaveEnabled = false;
+        serverHostname.setText(ConfigurationController.getInstance().getConfigurationDTO().getServerHostname());
+        serverPort.setText(ConfigurationController.getInstance().getConfigurationDTO().getServerPort());
+        botName.setText(ConfigurationController.getInstance().getConfigurationDTO().getBotName());
+        password.setText(ConfigurationController.getInstance().getConfigurationDTO().getPassword());
+        channel.setText(ConfigurationController.getInstance().getConfigurationDTO().getChannel());
+        hexListenerPort.setText(ConfigurationController.getInstance().getConfigurationDTO().getHexListenerPort());
+        isBotAccountModded.setSelected(ConfigurationController.getInstance().getConfigurationDTO().getIsBotAccountModded());
+        isSaveEnabled = true;
 
         connectButton.addActionListener(new ActionListener() {
             @Override
@@ -91,6 +95,10 @@ public class ConfigurationPanel extends JPanel {
         password.setEnabled(enabled);
         channel.setEnabled(enabled);
         hexListenerPort.setEnabled(enabled);
+    }
+
+    public Boolean isBotAccountModded() {
+        return isBotAccountModded.isSelected();
     }
 
     public Boolean isTestCommandEnabled() {
@@ -130,9 +138,9 @@ public class ConfigurationPanel extends JPanel {
 
         createSpacer(form, new Dimension(0, 20));
 
-        enableTestCommandCheckBox = createFormCheckBox(form, "Enable test draw command ( " + BotEvents.UDRAFT_TEST.getEventCommand() + " )");
-
-        enableTestSaveDeckEventCheckBox = createFormCheckBox(form, "Enable test save deck Hex event");
+        isBotAccountModded = createFormCheckBox(form, "Does bot account have a mod?", true);
+        enableTestCommandCheckBox = createFormCheckBox(form, "Enable test draw command ( " + BotEvents.UDRAFT_TEST.getEventCommand() + " [" + BotEvents.UDRAFT_TEST.getOptionalArguments()[0] + "] )", false);
+        enableTestSaveDeckEventCheckBox = createFormCheckBox(form, "Enable test save deck Hex event", false);
 
         outerLayout.add(form, BorderLayout.NORTH);
         return outerLayout;
@@ -196,9 +204,18 @@ public class ConfigurationPanel extends JPanel {
     }
 
 
-    private JCheckBox createFormCheckBox(JPanel form, String title) {
+    private JCheckBox createFormCheckBox(JPanel form, String title, boolean saveOnChange) {
         GridBagLayout layout = (GridBagLayout) form.getLayout();
         JCheckBox checkBoxField = new JCheckBox(title);
+
+        if (saveOnChange) {
+            checkBoxField.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    saveData();
+                }
+            });
+        }
         layout.setConstraints(checkBoxField, inputConstraints);
         form.add(checkBoxField);
         return checkBoxField;
@@ -234,18 +251,20 @@ public class ConfigurationPanel extends JPanel {
                 !hexListenerPort.getText().isEmpty());
     }
 
-    private class InputChangeListener implements DocumentListener {
-
-        private void saveData() {
-            LinkedHashMap<String, String> dataMap = new LinkedHashMap<>();
-            if (!serverHostname.getText().isEmpty()) dataMap.put("serverHostname", serverHostname.getText());
-            if (!serverPort.getText().isEmpty()) dataMap.put("serverPort", serverPort.getText());
-            if (!botName.getText().isEmpty()) dataMap.put("botName", botName.getText());
-            if (!password.getText().isEmpty()) dataMap.put("password", password.getText());
-            if (!channel.getText().isEmpty()) dataMap.put("channel", channel.getText());
-            if (!hexListenerPort.getText().isEmpty()) dataMap.put("hexListenerPort", hexListenerPort.getText());
-            configurationFile.saveData(dataMap);
+    private void saveData() {
+        if (isSaveEnabled) {
+            ConfigurationController.getInstance().getConfigurationDTO().setServerHostname(serverHostname.getText());
+            ConfigurationController.getInstance().getConfigurationDTO().setServerPort(serverPort.getText());
+            ConfigurationController.getInstance().getConfigurationDTO().setBotName(botName.getText());
+            ConfigurationController.getInstance().getConfigurationDTO().setPassword(password.getText());
+            ConfigurationController.getInstance().getConfigurationDTO().setChannel(channel.getText());
+            ConfigurationController.getInstance().getConfigurationDTO().setHexListenerPort(hexListenerPort.getText());
+            ConfigurationController.getInstance().getConfigurationDTO().setIsBotAccountModded(isBotAccountModded.isSelected());
+            ConfigurationController.getInstance().saveData();
         }
+    }
+
+    private class InputChangeListener implements DocumentListener {
 
         @Override
         public void insertUpdate(DocumentEvent e) {

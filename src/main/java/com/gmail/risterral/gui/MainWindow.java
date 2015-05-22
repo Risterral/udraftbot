@@ -35,6 +35,14 @@ public class MainWindow extends JFrame {
         tabbedPane = new JTabbedPane();
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         this.add(mainPanel);
+
+        final CheckVersion checkVersion = new CheckVersion(this);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                checkVersion.checkVersion();
+            }
+        });
     }
 
 

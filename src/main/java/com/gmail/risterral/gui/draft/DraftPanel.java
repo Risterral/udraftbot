@@ -57,12 +57,7 @@ public class DraftPanel extends JPanel {
         }
         votesChartLabel.setText(VOTES_CHART_LABEL_TEXT.replace(VOTES_CHART_LABEL_PATTERN, numberOfVotes.toString()));
 
-        if (!votesMap.isEmpty()) {
-            cardImage.setImage(new ArrayList<>(votesMap.keySet()).get(0), 0);
-        } else {
-            cardImage.setImage("", 0);
-        }
-
+        cardImage.setWinningCardImage(!votesMap.isEmpty() ? new ArrayList<>(votesMap.keySet()).get(0) : "");
         votesChart.setVotes(votesMap);
     }
 }
