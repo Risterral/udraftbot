@@ -64,6 +64,8 @@ public class ConfigurationController {
             if (decryptedData.startsWith(SALT)) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 configurationDTO = objectMapper.readValue(decryptedData.replaceAll(SALT, ""), ConfigurationDTO.class);
+            } else {
+                configurationDTO = new ConfigurationDTO();
             }
             reader.close();
         } catch (Exception ignored) {
