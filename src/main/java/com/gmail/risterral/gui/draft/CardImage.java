@@ -99,7 +99,7 @@ public class CardImage extends JPanel {
             boolean isImageLoaded = false;
             for (int i = 0; i < MAXIMUM_NUMBER_OF_LOADING_IMAGE_TRIES; i++) {
                 try {
-                    URL url = new URL(IMAGE_PREFIX + URLEncoder.encode(cardName, "UTF-8").replace("+", "%20") + IMAGE_EXTENSION);
+                    URL url = new URL(IMAGE_PREFIX + URLEncoder.encode(cardName, "UTF-8").replace("+", "%20").replace("%E2%80%99", "%27").replace("%3A", "").replace(".", "") + IMAGE_EXTENSION);
                     BufferedImage imageRead = ImageIO.read(url);
                     if (imageRead == null) {
                         throw new IIOException("Can't get input stream from URL!");
