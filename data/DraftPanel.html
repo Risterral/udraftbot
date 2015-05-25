@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>UDraft bot - draft panel</title>
+
+    <style type="text/css">
+        .draft-panel-table, .draft-panel-table table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            border: 0 solid #ccc;
+        }
+        .draft-panel-table .number-of-votes,
+        .draft-panel-table .currently-winning-name {
+            text-align: center;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .draft-panel-table .currently-winning-image {
+            padding: 10px;
+            background:url({currently_winning_card_src}) no-repeat center center;
+            height:487px;
+            width:350px;
+        }
+
+        .draft-panel-table .card-row {
+            height: 30px;
+            width: 100%;
+        }
+
+        .draft-panel-table .card-row td {
+            white-space: nowrap;
+        }
+
+        .draft-panel-table .card-name {
+            font-weight:bold;
+        }
+
+        .draft-panel-table .card-votes {
+            height: 100%;
+            padding: 5px;
+            width: 100%;
+        }
+        .draft-panel-table .card-votes * {
+            height: 100%;
+            vertical-align: middle;
+        }
+
+        .draft-panel-table .card-votes-bar {
+            width: 100%;
+            min-width: 4px;
+            background-color: forestgreen;
+            border-radius: 3px;
+            box-shadow: 5px 4px 4px 0 rgba(0,0,0,0.75);
+        }
+
+        .draft-panel-table .card-number-of-votes {
+            display: inline;
+            padding-left: 5px;;
+        }
+    </style>
+</head>
+<body>
+    <table class="draft-panel-table" style="width: 100%">
+        <tr>
+            <th class="number-of-votes" colspan="2">Number of votes: {number_of_votes}</th>
+            <th class="currently-winning-name">Currently winning card:<BR/>{currently_winning_card_name}</th>
+        </tr>
+        <tr class="card-row" style="visibility: {card_1_visibility};">
+            <td class="card-name">{card_1_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_1_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_1_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+            <td rowspan="15"><div class="currently-winning-image"></div></td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_2_visibility};">
+            <td class="card-name">{card_2_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_2_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_2_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_3_visibility};">
+            <td class="card-name">{card_3_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_3_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_3_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_4_visibility};">
+            <td class="card-name">{card_4_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_4_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_4_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_5_visibility};">
+            <td class="card-name">{card_5_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_5_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_5_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_6_visibility};">
+            <td class="card-name">{card_6_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_6_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_6_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_7_visibility};">
+            <td class="card-name">{card_7_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_7_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_7_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_8_visibility};">
+            <td class="card-name">{card_8_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_8_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_8_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_9_visibility};">
+            <td class="card-name">{card_9_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_9_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_9_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_10_visibility};">
+            <td class="card-name">{card_10_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_10_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_10_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_11_visibility};">
+            <td class="card-name">{card_11_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_11_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_11_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_12_visibility};">
+            <td class="card-name">{card_12_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_12_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_12_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_13_visibility};">
+            <td class="card-name">{card_13_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_13_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_13_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_14_visibility};">
+            <td class="card-name">{card_14_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_14_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_14_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_15_visibility};">
+            <td class="card-name">{card_15_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_15_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_15_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+    </table>
+</body>
+</html>
