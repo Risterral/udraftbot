@@ -23,6 +23,8 @@ public class DraftPackEvent extends AbstractHexEvent {
 
     @Override
     public void call() {
-        HexEventsController.getInstance().setNewDraftPackCards(draftPackCardsNames);
+        if (HexEventsController.getInstance().isListenToDraft()) {
+            HexEventsController.getInstance().setNewDraftPackCards(draftPackCardsNames);
+        }
     }
 }

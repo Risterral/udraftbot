@@ -1,7 +1,7 @@
 package com.gmail.risterral.bot.events;
 
 public enum BotEvents {
-    PICK_CARD("!pick", null, new PickBotEvent()),
+    PICK_CARD("!pick", new String[] {"random"}, new PickBotEvent()),
     SHOW_CARD("!card", null, new ShowBotEvent()),
     UDRAFT_HELP("!udraft help", null, new UDraftHelpBotEvent()),
     UDRAFT_ABOUT("!udraft about", null, new UDraftAboutBotEvent()),

@@ -14,6 +14,7 @@ public class VotingController {
     private static final String IMAGE_PREFIX = "https://hextcg.com/wp-content/themes/hex/images/autocard/";
     private static final String IMAGE_EXTENSION = ".png";
 
+    private Random randomGenerator = new Random();
     private LinkedHashMap<String, Integer> cards;
     private LinkedHashMap<String, String> votes;
 
@@ -57,6 +58,12 @@ public class VotingController {
         }
     }
 
+    public void voteForRandomCard(String sender) {
+        if (cards != null) {
+            voteForCard(sender, new ArrayList<>(cards.keySet()).get(randomGenerator.nextInt(cards.size())));
+        }
+    }
+
     public void showCard(Integer cardIndex) {
         if (cardIndex >= 0 && cardIndex < cards.size()) {
             showCard(new ArrayList<>(cards.keySet()).get(cardIndex));
@@ -65,7 +72,7 @@ public class VotingController {
 
     public void showCard(String cardName) {
         try {
-            BotController.getInstance().sendMessage(cardName + ": " + IMAGE_PREFIX + URLEncoder.encode(cardName, "UTF-8").replace("+", "%20") + IMAGE_EXTENSION, BotMessageType.CARD_DETAILS);
+            BotController.getInstance().sendMessage(cardName + ": " + IMAGE_PREFIX + URLEncoder.encode(cardName, "UTF-8").replace("+", "%20").replace("%E2%80%99", "%27").replace("%3A", "").replace(".", "") + IMAGE_EXTENSION, BotMessageType.CARD_DETAILS);
         } catch (UnsupportedEncodingException ignored) {
         }
     }

@@ -6,7 +6,7 @@
 
     <groupId>com.gmail.risterral.udraftbot</groupId>
     <artifactId>udraftbot</artifactId>
-    <version>1.9.0</version>
+    <version>1.9.3</version>
 
     <dependencies>
         <dependency>
@@ -28,6 +28,15 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.5.1</version>
+        </dependency>
+
+        <!--JavaFX fix-->
+        <dependency>
+            <groupId>javafx</groupId>
+            <artifactId>jfxrt</artifactId>
+            <version>${java.version}</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
         </dependency>
     </dependencies>
 

@@ -2,14 +2,12 @@ package com.gmail.risterral.gui.config;
 
 import com.gmail.risterral.bot.events.BotEvents;
 import com.gmail.risterral.configuration.ConfigurationController;
-import com.gmail.risterral.configuration.ConfigurationDTO;
 import com.gmail.risterral.controllers.bot.BotController;
+import com.gmail.risterral.controllers.gui.GUIController;
 import com.gmail.risterral.controllers.hex.HexEventsController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.PlainDocument;
@@ -18,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.LinkedHashMap;
 
 public class ConfigurationPanel extends JPanel {
     private static final int PADDING = 15;
@@ -26,7 +23,7 @@ public class ConfigurationPanel extends JPanel {
 
     private GridBagConstraints inputConstraints = null;
     private GridBagConstraints labelConstraints = null;
-    private boolean isSaveEnabled = true;
+    private boolean isSaveOrChangeEnabled = true;
 
     private JTextField serverHostname;
     private JTextField serverPort;
@@ -35,12 +32,16 @@ public class ConfigurationPanel extends JPanel {
     private JTextField channel;
     private JTextField hexListenerPort;
 
-    private JCheckBox isBotAccountModded;
+    private JCheckBox isBotAccountModdedCheckBox;
+    private JCheckBox useCustomHtmlDraftPanelCheckBox;
     private JCheckBox enableTestCommandCheckBox;
     private JCheckBox enableTestSaveDeckEventCheckBox;
 
     private JButton connectButton;
     private JButton disconnectButton;
+
+    private JButton startListeningToDraftButton;
+    private JButton stopListeningToDraftButton;
 
     public ConfigurationPanel() {
         super();
@@ -51,15 +52,16 @@ public class ConfigurationPanel extends JPanel {
         this.add(createForm(), BorderLayout.CENTER);
         this.add(createButtonsPanel(), BorderLayout.EAST);
 
-        isSaveEnabled = false;
+        isSaveOrChangeEnabled = false;
         serverHostname.setText(ConfigurationController.getInstance().getConfigurationDTO().getServerHostname());
         serverPort.setText(ConfigurationController.getInstance().getConfigurationDTO().getServerPort());
         botName.setText(ConfigurationController.getInstance().getConfigurationDTO().getBotName());
         password.setText(ConfigurationController.getInstance().getConfigurationDTO().getPassword());
         channel.setText(ConfigurationController.getInstance().getConfigurationDTO().getChannel());
         hexListenerPort.setText(ConfigurationController.getInstance().getConfigurationDTO().getHexListenerPort());
-        isBotAccountModded.setSelected(ConfigurationController.getInstance().getConfigurationDTO().getIsBotAccountModded());
-        isSaveEnabled = true;
+        isBotAccountModdedCheckBox.setSelected(ConfigurationController.getInstance().getConfigurationDTO().getIsBotAccountModded());
+        useCustomHtmlDraftPanelCheckBox.setSelected(ConfigurationController.getInstance().getConfigurationDTO().getUseCustomHtmlDraftPanel());
+        isSaveOrChangeEnabled = true;
 
         connectButton.addActionListener(new ActionListener() {
             @Override
@@ -83,11 +85,33 @@ public class ConfigurationPanel extends JPanel {
                 setConnectButtonEnabled(true);
             }
         });
+
+        startListeningToDraftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HexEventsController.getInstance().setListenToDraft(true);
+                stopListeningToDraftButton.setEnabled(true);
+                startListeningToDraftButton.setEnabled(false);
+            }
+        });
+
+        stopListeningToDraftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HexEventsController.getInstance().setListenToDraft(false);
+                startListeningToDraftButton.setEnabled(true);
+                stopListeningToDraftButton.setEnabled(false);
+            }
+        });
     }
 
     public void setConnectButtonEnabled(boolean enabled) {
         connectButton.setEnabled(enabled);
         disconnectButton.setEnabled(!enabled);
+
+        startListeningToDraftButton.setEnabled(!enabled);
+        stopListeningToDraftButton.setEnabled(false);
+        HexEventsController.getInstance().setListenToDraft(false);
 
         serverHostname.setEnabled(enabled);
         serverPort.setEnabled(enabled);
@@ -98,7 +122,11 @@ public class ConfigurationPanel extends JPanel {
     }
 
     public Boolean isBotAccountModded() {
-        return isBotAccountModded.isSelected();
+        return isBotAccountModdedCheckBox.isSelected();
+    }
+
+    public Boolean isUseCustomHtmlDraftPanel() {
+        return useCustomHtmlDraftPanelCheckBox.isSelected();
     }
 
     public Boolean isTestCommandEnabled() {
@@ -138,9 +166,13 @@ public class ConfigurationPanel extends JPanel {
 
         createSpacer(form, new Dimension(0, 20));
 
-        isBotAccountModded = createFormCheckBox(form, "Does bot account have a mod?", true);
-        enableTestCommandCheckBox = createFormCheckBox(form, "Enable test draw command ( " + BotEvents.UDRAFT_TEST.getEventCommand() + " [" + BotEvents.UDRAFT_TEST.getOptionalArguments()[0] + "] )", false);
-        enableTestSaveDeckEventCheckBox = createFormCheckBox(form, "Enable test save deck Hex event", false);
+        isBotAccountModdedCheckBox = createFormCheckBox(form, "Does bot account have a mod?", true, false);
+        useCustomHtmlDraftPanelCheckBox = createFormCheckBox(form, "Use custom html draft panel", true, true);
+
+        createSpacer(form, new Dimension(0, 10));
+
+        enableTestCommandCheckBox = createFormCheckBox(form, "Enable test draw command ( " + BotEvents.UDRAFT_TEST.getEventCommand() + " [" + BotEvents.UDRAFT_TEST.getOptionalArguments()[0] + "] )", false, false);
+        enableTestSaveDeckEventCheckBox = createFormCheckBox(form, "Enable test save deck Hex event", false, false);
 
         outerLayout.add(form, BorderLayout.NORTH);
         return outerLayout;
@@ -159,9 +191,21 @@ public class ConfigurationPanel extends JPanel {
         disconnectButton.setEnabled(false);
         disconnectButton.setAlignmentX(CENTER_ALIGNMENT);
 
+        startListeningToDraftButton = new JButton("Start listening to draft");
+        startListeningToDraftButton.setAlignmentX(CENTER_ALIGNMENT);
+        startListeningToDraftButton.setEnabled(false);
+
+        stopListeningToDraftButton = new JButton("Stop listening to draft");
+        stopListeningToDraftButton.setAlignmentX(CENTER_ALIGNMENT);
+        stopListeningToDraftButton.setEnabled(false);
+
         buttonsPanel.add(connectButton);
         buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonsPanel.add(disconnectButton);
+        buttonsPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+        buttonsPanel.add(startListeningToDraftButton);
+        buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        buttonsPanel.add(stopListeningToDraftButton);
 
         return buttonsPanel;
     }
@@ -204,15 +248,20 @@ public class ConfigurationPanel extends JPanel {
     }
 
 
-    private JCheckBox createFormCheckBox(JPanel form, String title, boolean saveOnChange) {
+    private JCheckBox createFormCheckBox(JPanel form, String title, final boolean saveOnChange, final boolean updateDraftPanelOnChange) {
         GridBagLayout layout = (GridBagLayout) form.getLayout();
         JCheckBox checkBoxField = new JCheckBox(title);
 
-        if (saveOnChange) {
+        if (saveOnChange || updateDraftPanelOnChange) {
             checkBoxField.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
-                    saveData();
+                    if (saveOnChange) {
+                        saveData();
+                    }
+                    if (updateDraftPanelOnChange && isSaveOrChangeEnabled) {
+                        GUIController.getInstance().setDraftPanelView(useCustomHtmlDraftPanelCheckBox.isSelected());
+                    }
                 }
             });
         }
@@ -252,14 +301,15 @@ public class ConfigurationPanel extends JPanel {
     }
 
     private void saveData() {
-        if (isSaveEnabled) {
+        if (isSaveOrChangeEnabled) {
             ConfigurationController.getInstance().getConfigurationDTO().setServerHostname(serverHostname.getText());
             ConfigurationController.getInstance().getConfigurationDTO().setServerPort(serverPort.getText());
             ConfigurationController.getInstance().getConfigurationDTO().setBotName(botName.getText());
             ConfigurationController.getInstance().getConfigurationDTO().setPassword(password.getText());
             ConfigurationController.getInstance().getConfigurationDTO().setChannel(channel.getText());
             ConfigurationController.getInstance().getConfigurationDTO().setHexListenerPort(hexListenerPort.getText());
-            ConfigurationController.getInstance().getConfigurationDTO().setIsBotAccountModded(isBotAccountModded.isSelected());
+            ConfigurationController.getInstance().getConfigurationDTO().setIsBotAccountModded(isBotAccountModdedCheckBox.isSelected());
+            ConfigurationController.getInstance().getConfigurationDTO().setUseCustomHtmlDraftPanel(useCustomHtmlDraftPanelCheckBox.isSelected());
             ConfigurationController.getInstance().saveData();
         }
     }

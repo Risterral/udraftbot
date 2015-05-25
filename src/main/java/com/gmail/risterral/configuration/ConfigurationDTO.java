@@ -9,6 +9,7 @@ public class ConfigurationDTO {
     private String hexListenerPort;
     private Boolean isBotAccountModded;
     private String doNotShowAgainUpdateVersion;
+    private Boolean useCustomHtmlDraftPanel;
 
     public ConfigurationDTO() {
         this.serverHostname = "";
@@ -19,6 +20,7 @@ public class ConfigurationDTO {
         this.hexListenerPort = "";
         this.isBotAccountModded = false;
         this.doNotShowAgainUpdateVersion = "";
+        this.useCustomHtmlDraftPanel = false;
     }
 
     public String getServerHostname() {
@@ -83,5 +85,13 @@ public class ConfigurationDTO {
 
     public void setDoNotShowAgainUpdateVersion(String doNotShowAgainUpdateVersion) {
         this.doNotShowAgainUpdateVersion = doNotShowAgainUpdateVersion;
+    }
+
+    public Boolean getUseCustomHtmlDraftPanel() {
+        return useCustomHtmlDraftPanel;
+    }
+
+    public void setUseCustomHtmlDraftPanel(Boolean useCustomHtmlDraftPanel) {
+        this.useCustomHtmlDraftPanel = useCustomHtmlDraftPanel;
     }
 }

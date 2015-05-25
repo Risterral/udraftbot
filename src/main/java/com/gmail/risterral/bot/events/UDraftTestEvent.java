@@ -5,10 +5,8 @@ import com.gmail.risterral.controllers.hex.HexEventsController;
 import com.gmail.risterral.controllers.vote.VotingController;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class UDraftTestEvent implements IBotEvent {
-    private Random randomGenerator = new Random();
 
     @Override
     public void call(String sender, String... args) {
@@ -23,13 +21,18 @@ public class UDraftTestEvent implements IBotEvent {
             test.add("Wrathwood Master Moss");
             test.add("Wakizashi Ambusher");
             test.add("Te'talca, Orc Gladiator");
+            test.add("Baby Yeti");
+            test.add("Fish Hands");
+            test.add("Jank Bot");
+            test.add("Kismet's Reverie");
+            test.add("Soothing Breeze");
             test.add("Not existing card");
             HexEventsController.getInstance().clearDraftPackCards();
             HexEventsController.getInstance().setNewDraftPackCards(test);
 
             if (args.length > 2 && BotEvents.UDRAFT_TEST.getOptionalArguments()[0].equalsIgnoreCase(args[2])) {
-                for (int i = 0; i < 100; i++) {
-                    VotingController.getInstance().voteForCard("sender_" + i, randomGenerator.nextInt(test.size()));
+                for (int i = 0; i < 10; i++) {
+                    VotingController.getInstance().voteForRandomCard("sender_" + i);
                 }
             }
         }

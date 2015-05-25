@@ -16,6 +16,8 @@ public class DaraftCardPickedEvent extends AbstractHexEvent {
 
     @Override
     public void call() {
-        HexEventsController.getInstance().cardPicked(cardPicked);
+        if (HexEventsController.getInstance().isListenToDraft()) {
+            HexEventsController.getInstance().cardPicked(cardPicked);
+        }
     }
 }

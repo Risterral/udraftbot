@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HexEventsController {
@@ -20,6 +21,8 @@ public class HexEventsController {
     private Thread thread = null;
     private HexListener hexListener = null;
     private List<String> draftPackCards = null;
+
+    private boolean listenToDraft = false;
 
     private HexEventsController() {
 
@@ -68,7 +71,13 @@ public class HexEventsController {
     public void clearDraftPackCards() {
         if (this.draftPackCards != null) {
             this.draftPackCards.clear();
+            VotingController.getInstance().setNewDraftPackCards(new ArrayList<String>());
         }
+    }
+
+    public void setListenToDraft(boolean listenToDraft) {
+        this.listenToDraft = listenToDraft;
+        clearDraftPackCards();
     }
 
     public void cardPicked(String cardName) {
@@ -83,6 +92,9 @@ public class HexEventsController {
         return message;
     }
 
+    public boolean isListenToDraft() {
+        return listenToDraft;
+    }
 
     private class HexListener implements Runnable {
         private volatile boolean running = true;

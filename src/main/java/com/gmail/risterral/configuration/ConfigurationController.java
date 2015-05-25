@@ -12,7 +12,6 @@ import javax.crypto.SecretKey;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedHashMap;
 
 public class ConfigurationController {
     private static final ConfigurationController instance = new ConfigurationController();
@@ -21,7 +20,7 @@ public class ConfigurationController {
     private static final String ALGORITHM = "DES";
     private static final String FORMAT = "RAW";
     private static final String ENCODING = "utf-8";
-    private static final String FILE_NAME = "UDraftConfig.cfg";
+    private static final String FILE_NAME = "data/UDraftConfig.cfg";
     private static final String KEY = "i4niYu2u";
     private static final String SALT = "LT6mfxghgy";
     private Cipher encrypter;

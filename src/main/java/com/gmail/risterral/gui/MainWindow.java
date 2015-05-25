@@ -15,7 +15,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow() throws HeadlessException {
         super("UDraft Bot");
-        this.setSize(800, 600);
+        this.setSize(810, 630);
         this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);

@@ -36,12 +36,20 @@ public class GUIController {
         logPanel.logMessage(logMessage);
     }
 
+    public void setDraftPanelView(boolean isUseCustomHtmlDraftPanel) {
+        draftPanel.setView(isUseCustomHtmlDraftPanel);
+    }
+
     public void setConnectButtonEnabled(boolean enabled) {
         configurationPanel.setConnectButtonEnabled(enabled);
     }
 
     public Boolean isBotAccountModded() {
         return configurationPanel.isBotAccountModded();
+    }
+
+    public Boolean isUseCustomHtmlDraftPanel() {
+        return configurationPanel.isUseCustomHtmlDraftPanel();
     }
 
     public Boolean isTestCommandEnabled() {
@@ -55,7 +63,7 @@ public class GUIController {
     private void init() {
         mainWindow = new MainWindow();
         configurationPanel = new ConfigurationPanel();
-        draftPanel = new DraftPanel();
+        draftPanel = new DraftPanel(configurationPanel.isUseCustomHtmlDraftPanel());
         logPanel = new LogPanel();
 
         mainWindow.addToTabPane("Configuration", configurationPanel);
