@@ -18,7 +18,7 @@ import java.net.URL;
 import java.util.Map;
 
 public class CheckVersion {
-    private static final String CURRENT_UDRAFT_VERSION = "1.9.3";
+    private static final String CURRENT_UDRAFT_VERSION = "1.9.4";
     private static final String UDRAFT_VERSION_URL = "https://raw.githubusercontent.com/Risterral/udraftbot/master/udraft.version";
     private static final String UDRAFT_DOWNLOAD_LINK = "http://forums.cryptozoic.com/showthread.php?t=43201";
 

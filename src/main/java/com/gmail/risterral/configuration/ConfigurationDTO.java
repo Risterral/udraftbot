@@ -10,6 +10,10 @@ public class ConfigurationDTO {
     private Boolean isBotAccountModded;
     private String doNotShowAgainUpdateVersion;
     private Boolean useCustomHtmlDraftPanel;
+    private Integer windowLastPositionX;
+    private Integer windowLastPositionY;
+    private Integer windowLastPositionWidth;
+    private Integer windowLastPositionHeight;
 
     public ConfigurationDTO() {
         this.serverHostname = "";
@@ -21,6 +25,10 @@ public class ConfigurationDTO {
         this.isBotAccountModded = false;
         this.doNotShowAgainUpdateVersion = "";
         this.useCustomHtmlDraftPanel = false;
+        this.windowLastPositionX = null;
+        this.windowLastPositionY = null;
+        this.windowLastPositionWidth = null;
+        this.windowLastPositionHeight = null;
     }
 
     public String getServerHostname() {
@@ -93,5 +101,37 @@ public class ConfigurationDTO {
 
     public void setUseCustomHtmlDraftPanel(Boolean useCustomHtmlDraftPanel) {
         this.useCustomHtmlDraftPanel = useCustomHtmlDraftPanel;
+    }
+
+    public Integer getWindowLastPositionX() {
+        return windowLastPositionX;
+    }
+
+    public void setWindowLastPositionX(Integer windowLastPositionX) {
+        this.windowLastPositionX = windowLastPositionX;
+    }
+
+    public Integer getWindowLastPositionY() {
+        return windowLastPositionY;
+    }
+
+    public void setWindowLastPositionY(Integer windowLastPositionY) {
+        this.windowLastPositionY = windowLastPositionY;
+    }
+
+    public Integer getWindowLastPositionWidth() {
+        return windowLastPositionWidth;
+    }
+
+    public void setWindowLastPositionWidth(Integer windowLastPositionWidth) {
+        this.windowLastPositionWidth = windowLastPositionWidth;
+    }
+
+    public Integer getWindowLastPositionHeight() {
+        return windowLastPositionHeight;
+    }
+
+    public void setWindowLastPositionHeight(Integer windowLastPositionHeight) {
+        this.windowLastPositionHeight = windowLastPositionHeight;
     }
 }

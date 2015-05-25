@@ -5,7 +5,7 @@ import com.gmail.risterral.controllers.bot.BotMessageType;
 
 public class UDraftAboutBotEvent implements IBotEvent {
 
-    public static final String ABOUT_MESSAGE = "Bot was created to allow streamers bigger interaction with viewers while playing draft in Hex. Bot version: 1.0.61. Created by Risterral.";
+    public static final String ABOUT_MESSAGE = "Bot was created to allow streamers bigger interaction with viewers while playing draft in Hex. Bot version: 1.9.4. Created by Risterral.";
 
     @Override
     public void call(String sender, String... args) {

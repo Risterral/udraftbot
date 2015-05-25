@@ -1,5 +1,6 @@
 package com.gmail.risterral.gui;
 
+import com.gmail.risterral.configuration.ConfigurationController;
 import com.gmail.risterral.controllers.bot.BotController;
 import com.gmail.risterral.controllers.hex.HexEventsController;
 
@@ -17,16 +18,31 @@ public class MainWindow extends JFrame {
         super("UDraft Bot");
         this.setSize(810, 630);
         this.setResizable(true);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        Integer windowLastPositionX = ConfigurationController.getInstance().getConfigurationDTO().getWindowLastPositionX();
+        Integer windowLastPositionY = ConfigurationController.getInstance().getConfigurationDTO().getWindowLastPositionY();
+        Integer windowLastPositionWidth = ConfigurationController.getInstance().getConfigurationDTO().getWindowLastPositionWidth();
+        Integer windowLastPositionHeight = ConfigurationController.getInstance().getConfigurationDTO().getWindowLastPositionHeight();
+        if (windowLastPositionX != null && windowLastPositionY != null && windowLastPositionWidth != null && windowLastPositionHeight != null) {
+            this.setBounds(windowLastPositionX, windowLastPositionY, windowLastPositionWidth, windowLastPositionHeight);
+        } else {
+            this.setLocationRelativeTo(null);
+        }
 
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
+                ConfigurationController.getInstance().getConfigurationDTO().setWindowLastPositionX(getBounds().x);
+                ConfigurationController.getInstance().getConfigurationDTO().setWindowLastPositionY(getBounds().y);
+                ConfigurationController.getInstance().getConfigurationDTO().setWindowLastPositionWidth(getBounds().width);
+                ConfigurationController.getInstance().getConfigurationDTO().setWindowLastPositionHeight(getBounds().height);
+                ConfigurationController.getInstance().saveData();
 
                 BotController.getInstance().disconnect();
                 HexEventsController.getInstance().disconnect();
+
+                System.exit(0);
             }
         });
 
