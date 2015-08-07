@@ -1,6 +1,6 @@
 package com.gmail.risterral;
 
-import com.gmail.risterral.controllers.gui.GUIController;
+import com.gmail.risterral.gui.GUIController;
 
 public class Main {
 

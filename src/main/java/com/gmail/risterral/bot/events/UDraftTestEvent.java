@@ -1,8 +1,9 @@
 package com.gmail.risterral.bot.events;
 
-import com.gmail.risterral.controllers.gui.GUIController;
-import com.gmail.risterral.controllers.hex.HexEventsController;
-import com.gmail.risterral.controllers.vote.VotingController;
+import com.gmail.risterral.hex.HexEventsController;
+import com.gmail.risterral.hex.events.dto.CardDTO;
+import com.gmail.risterral.util.DraftController;
+import com.gmail.risterral.util.VotingController;
 
 import java.util.ArrayList;
 
@@ -10,30 +11,29 @@ public class UDraftTestEvent implements IBotEvent {
 
     @Override
     public void call(String sender, String... args) {
-        if (GUIController.getInstance().isTestCommandEnabled()) {
-            final java.util.List<String> test = new ArrayList<>();
-            test.add("Crackling Rot");
-            test.add("Army of the Arcane Cinder");
-            test.add("Zeedu");
-            test.add("Zakiir");
-            test.add("Zombie");
-            test.add("Zombie Plague");
-            test.add("Wrathwood Master Moss");
-            test.add("Wakizashi Ambusher");
-            test.add("Te'talca, Orc Gladiator");
-            test.add("Baby Yeti");
-            test.add("Fish Hands");
-            test.add("Jank Bot");
-            test.add("Kismet's Reverie");
-            test.add("Soothing Breeze");
-            test.add("Not existing card");
-            HexEventsController.getInstance().clearDraftPackCards();
-            HexEventsController.getInstance().setNewDraftPackCards(test);
+        final ArrayList<CardDTO> test = new ArrayList<>();
+        test.add(new CardDTO("Crackling Rot"));
+        test.add(new CardDTO("Army of the Arcane Cinder"));
+        test.add(new CardDTO("Zeedu"));
+        test.add(new CardDTO("Zakiir"));
+        test.add(new CardDTO("Construction Plans: War Hulk"));
+        test.add(new CardDTO("Zombie Plague"));
+        test.add(new CardDTO("Wrathwood Master Moss"));
+        test.add(new CardDTO("To the Skies!"));
+        test.add(new CardDTO("Te'talca, Orc Gladiator"));
+        test.add(new CardDTO("Baby Yeti"));
+        test.add(new CardDTO("Fish Hands"));
+        test.add(new CardDTO("Jank Bot"));
+        test.add(new CardDTO("Kismet's Reverie"));
+        test.add(new CardDTO("Soothing Breeze"));
+        test.add(new CardDTO("Not existing card"));
+        VotingController.getInstance().clearAllVotes();
+        HexEventsController.getInstance().clearDraftPackCards(true);
+        HexEventsController.getInstance().setNewDraftPackCards(test);
 
-            if (args.length > 2 && BotEvents.UDRAFT_TEST.getOptionalArguments()[0].equalsIgnoreCase(args[2])) {
-                for (int i = 0; i < 10; i++) {
-                    VotingController.getInstance().voteForRandomCard("sender_" + i);
-                }
+        if (args.length > 2 && BotEvents.UDRAFT_TEST.getOptionalArguments()[0].equalsIgnoreCase(args[2])) {
+            for (int i = 0; i < 10; i++) {
+                DraftController.getInstance().voteForRandomCard("sender_" + i);
             }
         }
     }

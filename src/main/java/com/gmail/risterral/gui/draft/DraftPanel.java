@@ -1,6 +1,9 @@
 package com.gmail.risterral.gui.draft;
 
-import com.gmail.risterral.controllers.gui.GUIController;
+import com.gmail.risterral.gui.GUIController;
+import com.gmail.risterral.gui.TabPanel;
+import com.gmail.risterral.gui.common.CardImage;
+import com.gmail.risterral.util.configuration.ConfigurationController;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 
@@ -14,12 +17,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class DraftPanel extends JPanel {
+public class DraftPanel extends TabPanel {
     private static final String VOTES_CHART_LABEL_PATTERN = "{0}";
     private static final String VOTES_CHART_LABEL_TEXT = "Number of votes: " + VOTES_CHART_LABEL_PATTERN;
     private static final String DATA_DRAFT_PANEL_HTML_SRC = "data/DraftPanel.html";
 
+    private JLabel warningLabel;
+
     private DraftPanelHtml draftPanelHtml;
+    private String htmlContent;
     private boolean isHtmlValid = true;
 
     private JPanel votesChartPanel;
@@ -30,12 +36,22 @@ public class DraftPanel extends JPanel {
 
     private LinkedHashMap<String, Integer> lastVotesMap;
 
-    public DraftPanel(Boolean useCustomHtmlDraftPanel) {
-        super();
+    public DraftPanel(String tabTitle, final Boolean useCustomHtmlDraftPanel) {
+        super(tabTitle);
         this.setLayout(new BorderLayout());
 
+        warningLabel = new JLabel("You are not listening to draft");
+        warningLabel.setFont(warningLabel.getFont().deriveFont(32.0f));
+        warningLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        warningLabel.setForeground(Color.red);
+
+
+        Platform.setImplicitExit(false);
+
+        this.add(warningLabel, BorderLayout.NORTH);
+
         try {
-            createDraftPanelHtml(Files.readAllLines(Paths.get(DATA_DRAFT_PANEL_HTML_SRC), Charset.defaultCharset()));
+            createDraftPanelHtml(Files.readAllLines(Paths.get(DATA_DRAFT_PANEL_HTML_SRC), Charset.defaultCharset()), useCustomHtmlDraftPanel);
         } catch (Exception e) {
             isHtmlValid = false;
         }
@@ -72,6 +88,10 @@ public class DraftPanel extends JPanel {
         setView(useCustomHtmlDraftPanel);
     }
 
+    public void setListenToDraft(boolean isListening) {
+        warningLabel.setVisible(!isListening);
+    }
+
     public void setView(boolean isUseCustomHtmlDraftPanel) {
         if (isHtmlValid) {
             votesChartPanel.setVisible(!isUseCustomHtmlDraftPanel);
@@ -103,19 +123,58 @@ public class DraftPanel extends JPanel {
         }
     }
 
-    private void createDraftPanelHtml(List<String> contentLines) {
+    private void createDraftPanelHtml(List<String> contentLines, final Boolean useCustomHtmlDraftPanel) {
         final StringBuilder content = new StringBuilder();
         for (String contentLine : contentLines) {
             content.append(contentLine).append("\n");
         }
 
+        this.htmlContent = content.toString();
+
         new JFXPanel();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                draftPanelHtml = new DraftPanelHtml(content.toString());
+                draftPanelHtml = new DraftPanelHtml(htmlContent);
                 add(draftPanelHtml, BorderLayout.CENTER);
+
+                if (draftPanelHtml != null) {
+                    draftPanelHtml.setVisible(useCustomHtmlDraftPanel);
+                }
             }
         });
+    }
+
+    @Override
+    public void update() {
+
+
+        new JFXPanel();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (draftPanelHtml != null) {
+                    remove(draftPanelHtml);
+                }
+
+                draftPanelHtml = new DraftPanelHtml(htmlContent);
+                add(draftPanelHtml, BorderLayout.CENTER);
+
+                setView(ConfigurationController.getInstance().getConfigurationDTO().getUseCustomHtmlDraftPanel());
+                setView(!ConfigurationController.getInstance().getConfigurationDTO().getUseCustomHtmlDraftPanel());
+                setView(ConfigurationController.getInstance().getConfigurationDTO().getUseCustomHtmlDraftPanel());
+//                if (draftPanelHtml != null) {
+//                    draftPanelHtml.setVisible(true);
+//                }
+            }
+        });
+
+
+//    }
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//        });
     }
 }

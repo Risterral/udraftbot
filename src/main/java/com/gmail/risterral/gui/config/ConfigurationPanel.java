@@ -1,10 +1,11 @@
 package com.gmail.risterral.gui.config;
 
-import com.gmail.risterral.bot.events.BotEvents;
-import com.gmail.risterral.configuration.ConfigurationController;
-import com.gmail.risterral.controllers.bot.BotController;
-import com.gmail.risterral.controllers.gui.GUIController;
-import com.gmail.risterral.controllers.hex.HexEventsController;
+import com.gmail.risterral.bot.BotController;
+import com.gmail.risterral.gui.GUIController;
+import com.gmail.risterral.gui.TabPanel;
+import com.gmail.risterral.gui.common.IntegerDocumentFilter;
+import com.gmail.risterral.hex.HexEventsController;
+import com.gmail.risterral.util.configuration.ConfigurationController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,7 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class ConfigurationPanel extends JPanel {
+public class ConfigurationPanel extends TabPanel {
     private static final int PADDING = 15;
     private static final int PADDING_RIGHT = 100;
 
@@ -34,7 +35,6 @@ public class ConfigurationPanel extends JPanel {
 
     private JCheckBox isBotAccountModdedCheckBox;
     private JCheckBox useCustomHtmlDraftPanelCheckBox;
-    private JCheckBox enableTestCommandCheckBox;
     private JCheckBox enableTestSaveDeckEventCheckBox;
 
     private JButton connectButton;
@@ -43,8 +43,13 @@ public class ConfigurationPanel extends JPanel {
     private JButton startListeningToDraftButton;
     private JButton stopListeningToDraftButton;
 
-    public ConfigurationPanel() {
-        super();
+    @Override
+    public void update() {
+
+    }
+
+    public ConfigurationPanel(String tabTitle) {
+        super(tabTitle);
         this.setLayout(new BorderLayout());
         this.initConstrains();
 
@@ -90,6 +95,7 @@ public class ConfigurationPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 HexEventsController.getInstance().setListenToDraft(true);
+                GUIController.getInstance().setListenToDraft(true);
                 stopListeningToDraftButton.setEnabled(true);
                 startListeningToDraftButton.setEnabled(false);
             }
@@ -99,6 +105,7 @@ public class ConfigurationPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 HexEventsController.getInstance().setListenToDraft(false);
+                GUIController.getInstance().setListenToDraft(false);
                 startListeningToDraftButton.setEnabled(true);
                 stopListeningToDraftButton.setEnabled(false);
             }
@@ -129,10 +136,6 @@ public class ConfigurationPanel extends JPanel {
         return useCustomHtmlDraftPanelCheckBox.isSelected();
     }
 
-    public Boolean isTestCommandEnabled() {
-        return enableTestCommandCheckBox.isSelected();
-    }
-
     public Boolean isTestSaveDeckEventEnabled() {
         return enableTestSaveDeckEventCheckBox.isSelected();
     }
@@ -141,6 +144,7 @@ public class ConfigurationPanel extends JPanel {
         JPanel header = new JPanel();
 
         JLabel headerTitle = new JLabel("Configuration panel");
+        headerTitle.setFont(headerTitle.getFont().deriveFont(16.0f));
         header.add(headerTitle);
 
         return header;
@@ -168,10 +172,6 @@ public class ConfigurationPanel extends JPanel {
 
         isBotAccountModdedCheckBox = createFormCheckBox(form, "Does bot account have a mod?", true, false);
         useCustomHtmlDraftPanelCheckBox = createFormCheckBox(form, "Use custom html draft panel", true, true);
-
-        createSpacer(form, new Dimension(0, 10));
-
-        enableTestCommandCheckBox = createFormCheckBox(form, "Enable test draw command ( " + BotEvents.UDRAFT_TEST.getEventCommand() + " [" + BotEvents.UDRAFT_TEST.getOptionalArguments()[0] + "] )", false, false);
         enableTestSaveDeckEventCheckBox = createFormCheckBox(form, "Enable test save deck Hex event", false, false);
 
         outerLayout.add(form, BorderLayout.NORTH);

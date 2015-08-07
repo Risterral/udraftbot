@@ -1,6 +1,6 @@
 package com.gmail.risterral.gui.log;
 
-import com.gmail.risterral.controllers.log.LogMessageDTO;
+import com.gmail.risterral.util.log.LogMessageDTO;
 
 import javax.swing.*;
 import java.awt.*;

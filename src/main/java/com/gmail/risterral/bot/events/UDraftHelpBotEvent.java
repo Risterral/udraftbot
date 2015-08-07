@@ -1,7 +1,7 @@
 package com.gmail.risterral.bot.events;
 
-import com.gmail.risterral.controllers.bot.BotController;
-import com.gmail.risterral.controllers.bot.BotMessageType;
+import com.gmail.risterral.bot.BotController;
+import com.gmail.risterral.bot.BotMessageType;
 
 public class UDraftHelpBotEvent implements IBotEvent {
 
@@ -11,6 +11,6 @@ public class UDraftHelpBotEvent implements IBotEvent {
 
     @Override
     public void call(String sender, String... args) {
-        BotController.getInstance().sendMessage(ABOUT_MESSAGE + " " + PICK_COMMAND_DETAILS + " " + CARD_COMMAND_DETAILS, BotMessageType.BOT_INFO);
+        BotController.getInstance().sendMessage(ABOUT_MESSAGE + " " + PICK_COMMAND_DETAILS + " " + CARD_COMMAND_DETAILS, BotMessageType.BOT_INFO, null);
     }
 }

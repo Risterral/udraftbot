@@ -2,13 +2,13 @@ package com.gmail.risterral.bot.events;
 
 import com.gmail.risterral.util.DraftController;
 
-public class ShowBotEvent implements IBotEvent {
+public class PriceBotEvent implements IBotEvent {
 
     @Override
     public void call(String sender, String... args) {
         if (args.length > 1) {
             if (args[1].matches("^\\d+$")) {
-                DraftController.getInstance().showCard(Integer.parseInt(args[1]) - 1);
+                DraftController.getInstance().checkPrice(Integer.parseInt(args[1]) - 1);
             } else {
                 String card = "";
                 String separator = "";
@@ -16,7 +16,7 @@ public class ShowBotEvent implements IBotEvent {
                     card += separator + args[i];
                     separator = " ";
                 }
-                DraftController.getInstance().showCard(card, true);
+                DraftController.getInstance().checkPrice(card, true);
             }
         }
     }
