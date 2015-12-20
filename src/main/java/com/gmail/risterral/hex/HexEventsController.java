@@ -128,7 +128,7 @@ public class HexEventsController {
                             AbstractHexEvent event = AbstractHexEvent.getEvent(content);
                             event.call();
                         } catch (EventParsingException e) {
-                            LogController.log(this.getClass(), e, LogMessageType.ERROR, "Unexpected event type.");
+                            LogController.log(this.getClass(), e, LogMessageType.ERROR, "Unexpected event type.", false);
                         }
                     }
                 }
