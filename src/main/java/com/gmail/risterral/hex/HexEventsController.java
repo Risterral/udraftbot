@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HexEventsController {
@@ -61,8 +62,9 @@ public class HexEventsController {
     }
 
     public void setNewDraftPackCards(ArrayList<CardDTO> cards) {
-        if ((draftPackCards != null && draftPackCards.equals(cards)) || cards == null || cards.isEmpty()) return;
-
+        if (cards == null || cards.isEmpty()) return;
+        Collections.reverse(cards);
+        if (draftPackCards != null && draftPackCards.equals(cards)) return;
         this.draftPackCards = cards;
 
         BotController.getInstance().sendMessage(prepareBotMessage(this.draftPackCards), BotMessageType.CARDS_LIST, null);
