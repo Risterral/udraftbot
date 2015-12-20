@@ -9,8 +9,6 @@ public class PickBotEvent implements IBotEvent {
         if (args.length > 1) {
             if (args[1].matches("^\\d+$")) {
                 DraftController.getInstance().voteForCard(sender, Integer.parseInt(args[1]) - 1);
-            } else if (BotEvents.PICK_CARD.getOptionalArguments()[0].equalsIgnoreCase(args[1])) {
-                DraftController.getInstance().voteForRandomCard(sender);
             } else {
                 String card = "";
                 String separator = "";

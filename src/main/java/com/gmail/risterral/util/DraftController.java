@@ -2,14 +2,17 @@ package com.gmail.risterral.util;
 
 import com.gmail.risterral.bot.BotController;
 import com.gmail.risterral.bot.BotMessageType;
+import com.gmail.risterral.hex.HexEventsController;
 import com.gmail.risterral.hex.events.dto.CardDTO;
 import com.gmail.risterral.util.configuration.AliasDTO;
 import com.gmail.risterral.util.configuration.ConfigurationController;
 import com.gmail.risterral.util.statistics.CardsStatisticsController;
+import com.gmail.risterral.util.statistics.HexEntitiesController;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class DraftController {
@@ -22,6 +25,7 @@ public class DraftController {
     private boolean isDraftEnded = false;
     private ArrayList<String> cardsPicked = new ArrayList<>();
     private ArrayList<CardDTO> cards;
+    private List<String> cardsNames;
 
     private DraftController() {
     }
@@ -37,6 +41,7 @@ public class DraftController {
             isDraftEnded = false;
         }
         this.cards = cards;
+        this.cardsNames = createCardsNamesList();
         VotingController.getInstance().setNewDraftPackCards(cards);
     }
 
@@ -50,12 +55,24 @@ public class DraftController {
         if (searchForAlias) {
             cardName = searchForAlias(cardName);
         }
-        VotingController.getInstance().voteForCard(sender, cardName);
+        cardName = HexEntitiesController.getInstance().searchForTheCard(cardName, cardsNames);
+        if (cardName != null) {
+            VotingController.getInstance().voteForCard(sender, cardName);
+        }
     }
 
     public void voteForRandomCard(String sender) {
         if (cards != null) {
             voteForCard(sender, cards.get(randomGenerator.nextInt(cards.size())).name, false);
+        }
+    }
+
+    public void voteForValueCard(String sender) {
+        if (cards != null) {
+            String cardName = CardsStatisticsController.getInstance().getMostValuable(cardsNames);
+            if (cardName != null) {
+                voteForCard(sender, cardName, false);
+            }
         }
     }
 
@@ -70,7 +87,10 @@ public class DraftController {
             if (searchForAlias) {
                 cardName = searchForAlias(cardName);
             }
-            BotController.getInstance().sendMessage(cardName + ": " + IMAGE_PREFIX + URLEncoder.encode(cardName, "UTF-8").replace("+", "%20").replace("%E2%80%99", "%27").replace("%3A", "").replace("%21", "").replace(".", "") + IMAGE_EXTENSION, BotMessageType.CARD_DETAILS, null);
+            cardName = HexEntitiesController.getInstance().searchForTheCard(cardName, null);
+            if (cardName != null) {
+                BotController.getInstance().sendMessage(cardName + ": " + IMAGE_PREFIX + URLEncoder.encode(cardName, "UTF-8").replace("+", "%20").replace("%E2%80%99", "%27").replace("%3A", "").replace("%21", "").replace(".", "") + IMAGE_EXTENSION, BotMessageType.CARD_DETAILS, null);
+            }
         } catch (UnsupportedEncodingException ignored) {
         }
     }
@@ -87,6 +107,11 @@ public class DraftController {
         }
         cardsPicked.add(cardName);
         BotController.getInstance().sendMessage("Card picked: " + cardName, BotMessageType.CARDS_PICKED, null);
+
+        if (cardsPicked.size() == 45) {
+            HexEventsController.getInstance().clearDraftPackCards(false);
+            setDraftEnded(true);
+        }
     }
 
     public void checkCosts() {
@@ -111,7 +136,8 @@ public class DraftController {
         if (searchForAlias) {
             cardName = searchForAlias(cardName);
         }
-        CardsStatisticsController.getInstance().checkPrice(cardName);
+        String filteredCardName = HexEntitiesController.getInstance().searchForTheCard(cardName, null);
+        CardsStatisticsController.getInstance().checkPrice(filteredCardName != null ? filteredCardName : cardName);
     }
 
     public void setDraftEnded(boolean isDraftEnded) {
@@ -134,5 +160,13 @@ public class DraftController {
         }
 
         return value;
+    }
+
+    private List<String> createCardsNamesList() {
+        List<String> result = new ArrayList<>();
+        for (CardDTO card : cards) {
+            result.add(card.name);
+        }
+        return result;
     }
 }

@@ -20,6 +20,7 @@
         .draft-panel-table .currently-winning-image {
             padding: 10px;
             background:url({currently_winning_card_src}) no-repeat center center;
+            background-size: 100% 100%;
             height:487px;
             width:350px;
         }
@@ -229,6 +230,28 @@
                     <tr>
                         <td style="width: 100%"><div class="card-votes-bar"></div></td>
                         <td><div class="card-number-of-votes">{card_15_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_16_visibility};">
+            <td class="card-name">{card_16_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_16_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_16_number_of_votes}</div></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="card-row" style="visibility: {card_17_visibility};">
+            <td class="card-name">{card_17_name}</td>
+            <td class="card-votes">
+                <table style="width: {card_17_votes_bar_width};">
+                    <tr>
+                        <td style="width: 100%"><div class="card-votes-bar"></div></td>
+                        <td><div class="card-number-of-votes">{card_17_number_of_votes}</div></td>
                     </tr>
                 </table>
             </td>

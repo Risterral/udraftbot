@@ -61,7 +61,7 @@ public class HexEventsController {
     }
 
     public void setNewDraftPackCards(ArrayList<CardDTO> cards) {
-        if (draftPackCards != null && draftPackCards.equals(cards)) return;
+        if ((draftPackCards != null && draftPackCards.equals(cards)) || cards == null || cards.isEmpty()) return;
 
         this.draftPackCards = cards;
 

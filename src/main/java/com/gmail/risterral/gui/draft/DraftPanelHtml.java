@@ -22,7 +22,7 @@ public class DraftPanelHtml extends JFXPanel {
     private static final String LOAD_FAILED_IMAGE_SRC = "images/load_failed.png";
     private static final String IMAGE_PREFIX = "https://hextcg.com/wp-content/themes/hex/images/autocard/";
     private static final String IMAGE_EXTENSION = ".png";
-    private static final int MAXIMUM_NUMBER_OF_CARDS = 15;
+    private static final int MAXIMUM_NUMBER_OF_CARDS = 17;
     private static final int MAXIMUM_NUMBER_OF_LOADING_IMAGE_TRIES = 3;
 
     private final String pureContent;

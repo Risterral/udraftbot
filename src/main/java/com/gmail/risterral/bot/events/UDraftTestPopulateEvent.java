@@ -2,16 +2,17 @@ package com.gmail.risterral.bot.events;
 
 import com.gmail.risterral.hex.HexEventsController;
 import com.gmail.risterral.hex.events.dto.CardDTO;
+import com.gmail.risterral.util.DraftController;
 import com.gmail.risterral.util.VotingController;
 
 import java.util.ArrayList;
 
-public class UDraftTestEvent implements IBotEvent {
+public class UDraftTestPopulateEvent implements IBotEvent {
 
     @Override
     public void call(String sender, String... args) {
         final ArrayList<CardDTO> test = new ArrayList<>();
-        test.add(new CardDTO("Angel of Dawn"));
+        test.add(new CardDTO("Crackling Rot"));
         test.add(new CardDTO("Army of the Arcane Cinder"));
         test.add(new CardDTO("Zeedu"));
         test.add(new CardDTO("Zakiir"));
@@ -31,5 +32,9 @@ public class UDraftTestEvent implements IBotEvent {
         VotingController.getInstance().clearAllVotes();
         HexEventsController.getInstance().clearDraftPackCards(true);
         HexEventsController.getInstance().setNewDraftPackCards(test);
+
+        for (int i = 0; i < 10; i++) {
+            DraftController.getInstance().voteForRandomCard("sender_" + i);
+        }
     }
 }

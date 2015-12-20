@@ -19,7 +19,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 public class CheckVersion {
-    private static final String CURRENT_UDRAFT_VERSION = "2.0.3";
+    private static final String CURRENT_UDRAFT_VERSION = "2.2.0";
     private static final String UDRAFT_VERSION_URL = "https://raw.githubusercontent.com/Risterral/udraftbot/master/udraft.version";
     private static final String UDRAFT_DOWNLOAD_LINK = "http://forums.cryptozoic.com/showthread.php?t=43201";
 

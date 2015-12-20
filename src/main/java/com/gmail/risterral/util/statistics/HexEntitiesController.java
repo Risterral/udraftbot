@@ -9,7 +9,9 @@ import com.gmail.risterral.util.log.LogMessageType;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
@@ -28,6 +30,86 @@ public class HexEntitiesController {
 
     public HexCardDTO getCardData(String cardName) {
         return cardsData.containsKey(cardName) ? cardsData.get(cardName) : null;
+    }
+
+    public String searchForTheCard(String message, List<String> possibleNames) {
+        if (cardsData.containsKey(message)) {
+            return message;
+        }
+
+        List<String> results = new ArrayList<>();
+        for (String cardName : cardsData.keySet()) {
+            if (cardName.contains(message)) {
+                results.add(cardName);
+            }
+        }
+        if (results.size() == 1) {
+            return results.get(0);
+        } else if (results.size() > 1) {
+            if (possibleNames != null) {
+                List<String> filteredResults = new ArrayList<>(results);
+                for (String result : results) {
+                    if (!possibleNames.contains(result)) {
+                        filteredResults.remove(result);
+                    }
+                }
+                if (filteredResults.size() == 1) {
+                    return filteredResults.get(0);
+                }
+            }
+            return null;
+        }
+
+        StringBuilder patternStringBuilder = new StringBuilder(".*");
+        for (char c : message.toCharArray()) {
+            patternStringBuilder.append(c).append(".*");
+        }
+        String pattern = patternStringBuilder.toString();
+        for (String cardName : cardsData.keySet()) {
+            if (cardName.matches(pattern)) {
+                results.add(cardName);
+            }
+        }
+        if (results.size() == 1) {
+            return results.get(0);
+        } else if (results.size() > 1) {
+            if (possibleNames != null) {
+                List<String> filteredResults = new ArrayList<>(results);
+                for (String result : results) {
+                    if (!possibleNames.contains(result)) {
+                        filteredResults.remove(result);
+                    }
+                }
+                if (filteredResults.size() == 1) {
+                    return filteredResults.get(0);
+                }
+            }
+            return null;
+        }
+
+        pattern = "(?i:" + pattern + ")";
+        for (String cardName : cardsData.keySet()) {
+            if (cardName.matches(pattern)) {
+                results.add(cardName);
+            }
+        }
+        if (results.size() == 1) {
+            return results.get(0);
+        } else if (results.size() > 1) {
+            if (possibleNames != null) {
+                List<String> filteredResults = new ArrayList<>(results);
+                for (String result : results) {
+                    if (!possibleNames.contains(result)) {
+                        filteredResults.remove(result);
+                    }
+                }
+                if (filteredResults.size() == 1) {
+                    return filteredResults.get(0);
+                }
+            }
+        }
+
+        return null;
     }
 
     public void prepareCardsData() {
@@ -51,6 +133,11 @@ public class HexEntitiesController {
                 for (int i = 1; i < jsons.length; i++) {
                     try {
                         ObjectNode cardNode = (ObjectNode) mapper.readTree(jsons[i].replaceAll("\\n", "").replaceAll("\"m_Guid\" : '\\S+'", "\"m_Guid\" : 0").replaceAll(",\\s*}", "}"));
+
+                        if (cardNode.get("m_EquipmentModifiedCard").intValue() != 0) {
+                            continue;
+                        }
+
                         HexCardDTO dto = new HexCardDTO();
                         String cardName = cardNode.get("m_Name").asText();
                         dto.setName(cardName);

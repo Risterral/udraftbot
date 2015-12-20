@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class HexSocket {
+    private static final String CONTENT_LENGTH = "Content-Length: ";
+    private static final String HOST = "Host:";
+
     private final Socket socket;
     private final BufferedReader in;
     private final DataOutputStream out;
@@ -18,13 +21,36 @@ public class HexSocket {
     }
 
     public String getContent(boolean endConnection) throws IOException {
-        String content;
-        while ((content = in.readLine()) != null) {
-            if (content.length() == 0) {
-                content = in.readLine();
+        //Reading content by readLine() is to slow.
+//        String content;
+//        while ((content = in.readLine()) != null) {
+//            if (content.length() == 0) {
+//                content = in.readLine();
+//                break;
+//            }
+//        }
+
+        Integer contentLength = 0;
+        while (true) {
+
+            String line = in.readLine();
+
+            if (line.contains(CONTENT_LENGTH)) {
+                contentLength = Integer.parseInt(line.substring(CONTENT_LENGTH.length(), line.length()));
+            }
+
+            if (line.contains(HOST)) {
                 break;
             }
         }
+        in.read(); //10
+        in.read(); //13
+
+        byte[] bytes = new byte[contentLength];
+        for (int i = 0; i < contentLength; i++) {
+            bytes[i] = (byte) in.read();
+        }
+        String content = new String(bytes);
 
         if (endConnection) {
             out.close();

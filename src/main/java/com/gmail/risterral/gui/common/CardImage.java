@@ -102,7 +102,7 @@ public class CardImage extends JPanel {
                     if (imageRead == null) {
                         throw new IIOException("Can't get input stream from URL!");
                     }
-                    imageCache.put(cardName, imageRead);
+                    imageCache.put(cardName, imageRead.getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH));
                     isImageLoaded = true;
                     break;
                 } catch (Exception ignored) {

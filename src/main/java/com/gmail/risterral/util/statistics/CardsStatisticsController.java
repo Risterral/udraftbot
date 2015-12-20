@@ -16,6 +16,8 @@ import java.util.*;
 public class CardsStatisticsController {
     private static final CardsStatisticsController instance = new CardsStatisticsController();
 
+    private volatile HashMap<String, Long> cardsGoldPriceMap = new HashMap<>();
+
     private CardsStatisticsController() {
     }
 
@@ -115,18 +117,51 @@ public class CardsStatisticsController {
 
     public void checkPrice(String cardName) {
         try {
-            Thread worker = new Thread(new CheckPriceThread(cardName));
+            Thread worker = new Thread(new CheckPriceThread(cardName, true));
             worker.start();
         } catch (Exception ignored) {
             BotController.getInstance().sendMessage("Cannot obtain value of " + cardName, BotMessageType.CARDS_STATISTICS, null);
         }
     }
 
+    public String getMostValuable(List<String> cardNames) {
+        try {
+            List<Thread> workers = new ArrayList<>();
+
+            for (String cardName : cardNames) {
+                if (!cardsGoldPriceMap.containsKey(cardName)) {
+                    workers.add(new Thread(new CheckPriceThread(cardName, false)));
+                }
+            }
+
+            for (Thread worker : workers) {
+                worker.start();
+                worker.join();
+            }
+
+            synchronized (cardsGoldPriceMap) {
+                Long highestValue = 0L;
+                String result = null;
+                for (String cardName : cardNames) {
+                    if (cardsGoldPriceMap.containsKey(cardName) && cardsGoldPriceMap.get(cardName) > highestValue) {
+                        result = cardName;
+                        highestValue = cardsGoldPriceMap.get(cardName);
+                    }
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private class CheckPriceThread implements Runnable {
         private final String cardName;
+        private final Boolean outputMessage;
 
-        public CheckPriceThread(String cardName) {
+        public CheckPriceThread(String cardName, Boolean outputMessage) {
             this.cardName = cardName;
+            this.outputMessage = outputMessage;
         }
 
         @Override
@@ -159,11 +194,18 @@ public class CardsStatisticsController {
                         ObjectNode cardPrice = (ObjectNode) (mapper.readTree(jsonPriceResponse.replaceAll("\\(|\\)", ""))).get("price");
                         String platinumValue = cardPrice.get("platinum").asText();
                         String goldValue = cardPrice.get("gold").asText();
-                        BotController.getInstance().sendMessage(cardName + " value: " + platinumValue + " platinum or " + goldValue + " gold", BotMessageType.CARDS_STATISTICS, null);
+
+                        cardsGoldPriceMap.put(cardName, Long.valueOf(goldValue));
+
+                        if (outputMessage) {
+                            BotController.getInstance().sendMessage(cardName + " value: " + platinumValue + " platinum or " + goldValue + " gold", BotMessageType.CARDS_STATISTICS, null);
+                        }
                     }
                 }
             } catch (Exception e) {
-                BotController.getInstance().sendMessage("Cannot obtain value of " + cardName, BotMessageType.CARDS_STATISTICS, null);
+                if (outputMessage) {
+                    BotController.getInstance().sendMessage("Cannot obtain value of " + cardName, BotMessageType.CARDS_STATISTICS, null);
+                }
             }
         }
     }

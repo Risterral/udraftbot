@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class TwitchBot extends PircBot {
-    public static final int MAXIMUM_NUMBER_OF_RECONNECT_ATEPMTS = 5;
+    public static final int MAXIMUM_NUMBER_OF_RECONNECT_ATTEMPTS = 5;
     private volatile boolean running = true;
     private boolean isLoginSuccessful;
     private boolean listenEvents;
@@ -28,13 +28,24 @@ public class TwitchBot extends PircBot {
 
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
+        Integer commandLength = 0;
+        BotEvents event = null;
+        String sentMessage = null;
+
         for (BotEvents botEvent : BotEvents.values()) {
             if (message.toUpperCase().startsWith(botEvent.getEventCommand().toUpperCase())) {
                 Boolean isCommandEnabled = ConfigurationController.getInstance().getConfigurationDTO().getCommands().get(botEvent.name());
                 if ((isCommandEnabled != null && isCommandEnabled) || (isCommandEnabled == null && botEvent.getIsDefaultEnabled())) {
-                    botEvent.getEvent().call(sender, message.trim().split("\\s+"));
+                    if (botEvent.getEventCommand().length() > commandLength) {
+                        event = botEvent;
+                        sentMessage = message;
+                        commandLength = botEvent.getEventCommand().length();
+                    }
                 }
             }
+        }
+        if (commandLength > 0) {
+            event.getEvent().call(sender, sentMessage.trim().split("\\s+"));
         }
     }
 
@@ -53,7 +64,7 @@ public class TwitchBot extends PircBot {
                         try {
                             reconnect();
                         } catch (Exception ignored) {
-                            if (++reconnectAttempts >= MAXIMUM_NUMBER_OF_RECONNECT_ATEPMTS) {
+                            if (++reconnectAttempts >= MAXIMUM_NUMBER_OF_RECONNECT_ATTEMPTS) {
                                 LogController.log(this.getClass(), null, LogMessageType.ERROR, "Exceeded maximum number of reconnect attempts.");
                                 HexEventsController.getInstance().disconnect();
                                 GUIController.getInstance().setConnectButtonEnabled(true);

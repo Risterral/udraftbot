@@ -37,7 +37,7 @@ public class BotController {
             bot.connect(serverHostname, serverPort, password.startsWith(OAUTH_PREFIX) ? password : OAUTH_PREFIX + password);
 
             if (bot.isConnected() && bot.isLoginSuccessful()) {
-                this.channel = channel.startsWith(CHAT_PREFIX) ? channel : CHAT_PREFIX + channel;
+                this.channel = channel.startsWith(CHAT_PREFIX) ? channel.toLowerCase() : CHAT_PREFIX + channel.toLowerCase();
                 bot.joinChannel(this.channel);
                 lastMessageSendTime = new Date().getTime();
                 LogController.log(this.getClass(), null, LogMessageType.SUCCESS, "Successfully logged in to server.");
